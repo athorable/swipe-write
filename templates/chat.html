@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Swipe Write 💋</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #ff69b4;
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h1>Welcome to Swipe Write 💋</h1>
+    <div id="chat-box"></div>
+    <form id="chat-form" onsubmit="sendMessage(event)">
+<textarea id="user-input" placeholder="Need a flirty bio, spicy opener, or comeback that slaps? Type it here, babe 💘"></textarea>
+  <p class="sass-tip">Drop your hottest pic — I’ll judge it like a glam coach with attitude 💁‍♀️</p>
+<label class="upload-label">
+  Upload an Image
+  <input type="file" id="image-input" accept="image/*" hidden />
+</label>
+
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  async function sendMessage(e) {
+    e.preventDefault();
+    const message = document.getElementById("user-input").value;
+    const imageInput = document.getElementById("image-input");
+    const chatBox = document.getElementById("chat-box");
+
+    chatBox.innerHTML += `<div class="bubble user">🧍‍♂️: ${message}</div>`;
+    chatBox.innerHTML += `<div class="bubble swipe typing" id="loading">💋: Thinking... <span class="spinner"></span></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    if (imageInput.files.length > 0) {
+      const formData = new FormData();
+      formData.append("message", message);
+      formData.append("image", imageInput.files[0]);
+
+      const response = await fetch("/analyze", {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+      document.getElementById("loading").remove();
+      chatBox.innerHTML += `<div class="bubble swipe">💋: ${data.image_response} 😘🔥</div>`;
+    } else {
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+      });
+      const data = await response.json();
+      document.getElementById("loading").remove();
+      chatBox.innerHTML += `<div class="bubble swipe">💋: ${data.response} 💅✨</div>`;
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+    document.getElementById("user-input").value = "";
+    document.getElementById("image-input").value = null;
+  }
+</script>
+</body>
+</html>
