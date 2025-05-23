@@ -1,11 +1,10 @@
 services:
   - type: web
     name: swipe-write
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn main:app --host 0.0.0.0 --port 10000"
+    runtime: python
     plan: free
     region: oregon
-    runtime: python
-    autoDeploy: true
     branch: main
+    autoDeploy: true
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port 10000"
